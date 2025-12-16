@@ -35,6 +35,15 @@ class SAMLValidator:
         actual_metadata_url = node["metadataUrl"]
         actual_domains = {d["domain"] for d in node["emailDomainsList"]}
 
+        # ---- DEBUG PRINTS (THIS IS WHAT YOU WANT) ----
+        print("========== SAML METADATA URL CHECK ==========")
+        print("EXPECTED METADATA URL:")
+        print(expected_metadata_url)
+        print("--------------------------------------------")
+        print("ACTUAL METADATA URL:")
+        print(actual_metadata_url)
+        print("============================================")
+
         # ---- METADATA URL CHECK ----
         if actual_metadata_url != expected_metadata_url:
             raise RuntimeError(
