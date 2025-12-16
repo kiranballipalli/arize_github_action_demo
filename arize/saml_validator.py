@@ -1,5 +1,6 @@
 import os
 
+
 class SAMLValidator:
     def __init__(self, idp_data: dict):
         self.idp_data = idp_data
