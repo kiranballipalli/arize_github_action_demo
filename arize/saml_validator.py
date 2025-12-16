@@ -20,10 +20,6 @@ class SAMLValidator:
         )
 
     def validate(self):
-        # ---- FORCED FAILURE (DIAGNOSTIC) ----
-        if os.environ.get("ENV") == "prod":
-            raise RuntimeError("FORCED FAILURE: PROD validation check")
-
         supported_domains = self.get_supported_domains()
         expected_metadata_url = self.get_expected_metadata_url()
 
@@ -35,23 +31,7 @@ class SAMLValidator:
         actual_metadata_url = node["metadataUrl"]
         actual_domains = {d["domain"] for d in node["emailDomainsList"]}
 
-        # ---- METADATA URL CHECK ----
-        if actual_metadata_url != expected_metadata_url:
-            raise RuntimeError(
-                f"SAML metadata URL mismatch\n"
-                f"Expected: {expected_metadata_url}\n"
-                f"Actual:   {actual_metadata_url}"
-            )
-
-        # ---- DOMAIN CHECK ----
-        unsupported = actual_domains - supported_domains
-        if unsupported:
-            raise RuntimeError(
-                f"Unsupported email domains: {unsupported}\n"
-                f"Allowed: {supported_domains}"
-            )
-        
-        # ---- DEBUG PRINTS (THIS IS WHAT YOU WANT) ----
+        # ---- ALWAYS PRINT URLS ----
         print("========== SAML METADATA URL CHECK ==========")
         print("EXPECTED METADATA URL:")
         print(expected_metadata_url)
@@ -59,4 +39,24 @@ class SAMLValidator:
         print("ACTUAL METADATA URL:")
         print(actual_metadata_url)
         print("============================================")
-        print("SAML validation successful")
+
+        # ---- METADATA URL CHECK ----
+        if actual_metadata_url != expected_metadata_url:
+            raise RuntimeError(
+                "❌ SAML METADATA URL MISMATCH\n\n"
+                "EXPECTED METADATA URL:\n"
+                f"{expected_metadata_url}\n\n"
+                "ACTUAL METADATA URL:\n"
+                f"{actual_metadata_url}\n"
+            )
+
+        # ---- DOMAIN CHECK ----
+        unsupported = actual_domains - supported_domains
+        if unsupported:
+            raise RuntimeError(
+                "❌ UNSUPPORTED EMAIL DOMAINS\n\n"
+                f"UNSUPPORTED: {unsupported}\n"
+                f"ALLOWED: {supported_domains}"
+            )
+
+        print("✅ SAML validation successful")
