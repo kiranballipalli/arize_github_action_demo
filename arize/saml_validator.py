@@ -20,6 +20,10 @@ class SAMLValidator:
         )
 
     def validate(self):
+        # ---- FORCED FAILURE (DIAGNOSTIC) ----
+        if os.environ.get("ENV") == "prod":
+            raise RuntimeError("FORCED FAILURE: PROD validation check")
+
         supported_domains = self.get_supported_domains()
         expected_metadata_url = self.get_expected_metadata_url()
 
@@ -28,9 +32,17 @@ class SAMLValidator:
             raise RuntimeError("No SAML IdP configured")
 
         node = edges[0]["node"]
-
         actual_metadata_url = node["metadataUrl"]
         actual_domains = {d["domain"] for d in node["emailDomainsList"]}
+
+        # ---- DEBUG PRINTS (THIS IS WHAT YOU WANT) ----
+        print("========== SAML METADATA URL CHECK ==========")
+        print("EXPECTED METADATA URL:")
+        print(expected_metadata_url)
+        print("--------------------------------------------")
+        print("ACTUAL METADATA URL:")
+        print(actual_metadata_url)
+        print("============================================")
 
         # ---- METADATA URL CHECK ----
         if actual_metadata_url != expected_metadata_url:
