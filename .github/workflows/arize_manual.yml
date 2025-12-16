@@ -32,7 +32,7 @@ jobs:
       prod_authorizer: "https://login.microsoftonline.com"
       prod_tenant_id: "db05faca-c82a-4b9d-b9c5-0f64b6755421"
       prod_path: "/federationmetadata/2007-06/federationmetadata.xml"
-      prod_app_id: "46ccd4fc-c9c9-4146-8941-44792fec9b28"
+      prod_app_id: "46ccd4fc-c9c9-4146-8941-44792fec9b2"
 
     steps:
       - uses: actions/checkout@v4
