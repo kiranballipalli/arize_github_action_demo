@@ -43,7 +43,12 @@ jobs:
 
       - run: pip install gql requests
 
-      - name: Set env vars
+      # ---- EXPORT ENV NAME (IMPORTANT) ----
+      - name: Export environment name
+        run: echo "ENV=${{ github.event.inputs.env }}" >> $GITHUB_ENV
+
+      # ---- SET ENV VARS BASED ON INPUT ----
+      - name: Set SAML env vars
         run: |
           if [ "${{ github.event.inputs.env }}" = "dev" ]; then
             echo "SUPPORTED_DOMAINS=${{ env.dev_domains }}" >> $GITHUB_ENV
@@ -51,17 +56,13 @@ jobs:
             echo "TENANT_ID=${{ env.dev_tenant_id }}" >> $GITHUB_ENV
             echo "AUTHORIZER_URL_PATH=${{ env.dev_path }}" >> $GITHUB_ENV
             echo "APP_ID=${{ env.dev_app_id }}" >> $GITHUB_ENV
-            echo "ARIZE_GRAPHQL_URL=https://arize-dev.example.com/graphql" >> $GITHUB_ENV
           else
             echo "SUPPORTED_DOMAINS=${{ env.prod_domains }}" >> $GITHUB_ENV
             echo "AUTHORIZER_BASE_URL=${{ env.prod_authorizer }}" >> $GITHUB_ENV
             echo "TENANT_ID=${{ env.prod_tenant_id }}" >> $GITHUB_ENV
             echo "AUTHORIZER_URL_PATH=${{ env.prod_path }}" >> $GITHUB_ENV
             echo "APP_ID=${{ env.prod_app_id }}" >> $GITHUB_ENV
-            echo "ARIZE_GRAPHQL_URL=https://arize-prod.example.com/graphql" >> $GITHUB_ENV
           fi
 
-      - name: Run script
+      - name: Run Python
         run: python arize/main.py ${{ github.event.inputs.projectId }} ${{ github.event.inputs.env }}
-        env:
-          ARIZE_API_KEY: dummy_api_key
